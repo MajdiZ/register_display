@@ -4,6 +4,7 @@ namespace Drupal\register_display;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Path\AliasStorageInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -16,7 +17,7 @@ use Drupal\Core\Session\AccountInterface;
  * @package Drupal\register_display
  */
 class RegisterDisplayServices {
-  const REGISTER_DISPLAY_BASE_REGISTER_PATH = 'user/register';
+  const REGISTER_DISPLAY_BASE_REGISTER_PATH = '/user/register';
   protected $entityTypeManager;
   protected $aliasStorage;
   protected $languageManager;
@@ -63,19 +64,28 @@ class RegisterDisplayServices {
   }
 
   /**
-   * Return configuration for all register pages.
+   * Get configuration for register pages.
+   *
+   * @param string $roleMachineName
+   *   Role machine name, If provided function will return register page for
+   *   that role only.
    *
    * @return mixed
    *   If registration forms exists, array of paths.
    *   In other situation - FALSE.
    */
-  public function getRegistrationPages() {
+  public function getRegistrationPages($roleMachineName = NULL) {
     $availableRoles = $this->getAvailableUserRolesToRegister();
     if (!$availableRoles) {
       return FALSE;
     }
 
     $rolesConfig = FALSE;
+    $pagesConfig = \Drupal::config('register_display.settings.pages');
+
+    if (!empty($availableRoles[$roleMachineName])) {
+      return $pagesConfig->get($roleMachineName);
+    }
 
     $pagesConfig = \Drupal::config('register_display.settings.pages');
 
@@ -95,7 +105,36 @@ class RegisterDisplayServices {
    *    True if alias exist, otherwise FALSE.
    */
   public function isAliasExist($alias) {
-    return $this->aliasStorage->aliasExists($alias, $this->languageManager->getCurrentLanguage());
+    return $this->aliasStorage->aliasExists($alias, LanguageInterface::LANGCODE_NOT_SPECIFIED);
+  }
+
+  /**
+   * Update alias.
+   *
+   * @param string $source
+   *    Source path.
+   * @param string $alias
+   *    Alias path.
+   */
+  public function updateAlias($source, $alias) {
+    // First we check if source has alias.
+    $lookupAlias = $this->aliasStorage->lookupPathAlias($source, LanguageInterface::LANGCODE_NOT_SPECIFIED);
+    if ($lookupAlias) {
+      // Delete old alias.
+      $this->aliasStorage->delete(['source' => $source, 'alias' => $lookupAlias]);
+    }
+    // Create new alias.
+    $this->aliasStorage->save($source, $alias, LanguageInterface::LANGCODE_NOT_SPECIFIED);
+  }
+
+  /**
+   * Delete alias by source.
+   *
+   * @param string $source
+   *    Source path.
+   */
+  public function deleteAliasBySource($source) {
+    $this->aliasStorage->delete(['source' => $source]);
   }
 
 }
