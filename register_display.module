@@ -1,0 +1,98 @@
+<?php
+
+/**
+ * @file
+ * Contains register_display.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+
+
+
+/**
+ * Implements hook_help().
+ */
+function register_display_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the register_display module.
+    case 'help.page.register_display':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Different register form based on displays for each role.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function register_display_permission() {
+  return [
+    'administer register_display' => [
+      'title' => t('Administer register display'),
+      'description' => t('Configure register display module.'),
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme().
+ */
+function register_display_theme() {
+  return [
+    'register_display' => [
+      'render element' => 'children',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_operation_alter().
+ */
+function register_display_entity_operation_alter(array &$operations, \Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'user_role') {
+    if (\Drupal::service('router.route_provider')->getRouteByName(
+      'register_display.create_registration_page_form'
+    )) {
+      $availableUserRolesToRegister = \Drupal::service('register_display.services')->getAvailableUserRolesToRegister();
+      if (!in_array($entity->id(), array_keys($availableUserRolesToRegister))) {
+        return;
+      }
+      $operations['register_display_page'] = [
+        'title' => t('Add Registration page'),
+        'url' => Url::fromRoute(
+          'register_display.create_registration_page_form',
+          ['roleId' => $entity->id()]
+        ),
+        'weight' => 50,
+      ];
+    }
+  }
+}
+
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function register_display_entity_type_alter(array &$entity_types){
+  // We get all form modes, for all entities, and loop through them.
+  $form_modes = \Drupal::service('entity_display.repository')->getAllFormModes();
+  foreach ($form_modes as $entity_type => $display_modes) {
+    if ($entity_type !== 'user') {
+      // We are only interested in adding a handler to the Node entity.
+      continue;
+    }
+
+    $user_type = $entity_types[$entity_type];
+    foreach ($display_modes as $machine_name => $form_display) {
+      // We get the default handler class. It will be enough for us.
+      $default_handler_class = $user_type->getHandlerClasses()['form']['default'];
+      // We set the form class, keyed by the machine name of our custom form mode.
+      $user_type->setFormClass($machine_name, $default_handler_class);
+    }
+  }
+}
+

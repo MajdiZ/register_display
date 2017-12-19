@@ -6,6 +6,8 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element\PathElement;
+use Drupal\Core\Routing\RequestContext;
 use Drupal\register_display\RegisterDisplayServices;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -18,17 +20,20 @@ class CreateRegistrationPageForm extends ConfigFormBase {
 
   protected $services;
   protected $entityDisplayRepository;
+  protected $requestContext;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(RegisterDisplayServices $services,
     EntityDisplayRepositoryInterface $entityDisplayRepository,
-    ConfigFactoryInterface $config_factory) {
+    ConfigFactoryInterface $config_factory,
+    RequestContext $request_context) {
 
     parent::__construct($config_factory);
     $this->services = $services;
     $this->entityDisplayRepository = $entityDisplayRepository;
+    $this->requestContext = $request_context;
   }
 
   /**
@@ -38,7 +43,8 @@ class CreateRegistrationPageForm extends ConfigFormBase {
     return new static(
       $container->get('register_display.services'),
       $container->get('entity_display.repository'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('router.request_context')
     );
   }
 
@@ -72,35 +78,19 @@ class CreateRegistrationPageForm extends ConfigFormBase {
    *   Form array.
    */
   public function buildForm(array $form, FormStateInterface $form_state, $roleId = NULL) {
-    // Get available user roles for register.
-    $availableUserRolesToRegister = $this->services->getAvailableUserRolesToRegister();
+    // @TODO add check if roleID is null or not valid.
+    $config = $this->config('register_display.settings.pages')->get($roleId);
 
     $registerPageUrl = $this->services::REGISTER_DISPLAY_BASE_REGISTER_PATH . '/' . $roleId;
 
-    // @Todo Put some text here.
-    if (!isset($availableUserRolesToRegister[$roleId])) {
-      return FALSE;
-    }
-
-    // Load configuration.
-    $config = $this->config('register_display.settings.pages')->get($roleId);
+    $form['op'] = [
+      '#type' => 'value',
+      '#value' => empty($config) ? 'create' : 'update',
+    ];
 
     $form['roleId'] = [
       '#type' => 'value',
       '#value' => $roleId,
-    ];
-
-    $form['registerPageUrl'] = [
-      '#type' => 'value',
-      '#value' => $registerPageUrl,
-    ];
-
-    $form['registerPageAlias'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Registration page alias'),
-      '#description' => $this->t('Register page url for this role is @url', ['@url' => $registerPageUrl]),
-      '#default_value' => $config['registerPageAlias'],
-      '#required' => TRUE,
     ];
 
     // Load display modes.
@@ -114,6 +104,21 @@ class CreateRegistrationPageForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['registerPageUrl'] = [
+      '#type' => 'value',
+      '#value' => $registerPageUrl,
+    ];
+
+    $form['registerPageAlias'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Registration page alias'),
+      '#convert_path' => PathElement::CONVERT_NONE,
+      '#default_value' => $config['registerPageAlias'],
+      '#description' => $this->t('Register page url for this role is @url', ['@url' => $registerPageUrl]),
+      '#field_prefix' => $this->requestContext->getCompleteBaseUrl(),
+      '#required' => TRUE,
+    );
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -122,6 +127,13 @@ class CreateRegistrationPageForm extends ConfigFormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
+    $registerPageAlias = &$form_state->getValue('registerPageAlias');
+    $registerPageAlias = rtrim(trim(trim($registerPageAlias), ''), "\\/");
+
+    if ($registerPageAlias[0] !== '/') {
+      $form_state->setErrorByName('alias', 'The alias path has to start with a slash.');
+    }
+
     // We need to check the alias.
     // Ignore check if this is form submitted for the first time.
     $roleId = $form_state->getValue('roleId');
@@ -158,6 +170,8 @@ class CreateRegistrationPageForm extends ConfigFormBase {
     $this->configFactory->getEditable('register_display.settings.pages')
       ->set($formValues['roleId'], $formValues)
       ->save();
+    $this->services->updateAlias($formValues['registerPageUrl'], $formValues['registerPageAlias']);
+    $form_state->setRedirect('register_display.admin_index');
   }
 
 }
