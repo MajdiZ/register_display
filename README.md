@@ -18,6 +18,6 @@ user configuration won't be showing in the list)
 3- Click on create register page next to any role you want.
 
 ## Author
-Majdi Alomari
-https://www.drupal.org/u/majdi
+[Majdi Alomari](https://www.drupal.org/u/majdi)
+
 Majdi@majdi.me
