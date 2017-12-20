@@ -4,6 +4,7 @@ namespace Drupal\register_display;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Path\AliasStorageInterface;
@@ -17,7 +18,7 @@ use Drupal\Core\Session\AccountInterface;
  * @package Drupal\register_display
  */
 class RegisterDisplayServices {
-  const REGISTER_DISPLAY_BASE_REGISTER_PATH = '/user/register';
+  const REGISTER_DISPLAY_BASE_REGISTER_PATH = '/register-display';
   protected $entityTypeManager;
   protected $aliasStorage;
   protected $languageManager;
@@ -135,6 +136,19 @@ class RegisterDisplayServices {
    */
   public function deleteAliasBySource($source) {
     $this->aliasStorage->delete(['source' => $source]);
+  }
+
+  /**
+   * Inject user role in the creation process.
+   *
+   * @param array $form
+   *    Register form.
+   * @param FormStateInterface $form_state
+   *    Form state.
+   */
+  public function addRoleToUser(array &$form, FormStateInterface $form_state) {
+    $roleId = $form_state->getValue('roleId');
+    $form_state->setValue(array('roles', $roleId), $roleId);
   }
 
 }

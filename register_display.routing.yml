@@ -31,7 +31,7 @@ register_display.delete_registration_page_form:
     _permission: 'administer register_display'
 
 register_display.user_register_page:
-  path: 'user/register/{roleId}'
+  path: 'register-display/{roleId}'
   defaults:
     _controller: '\Drupal\register_display\Controller\UserPagesController::registerPage'
     _title_callback: '\Drupal\register_display\Controller\UserPagesController::registerPageTitle'

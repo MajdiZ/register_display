@@ -6,9 +6,7 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Url;
-
-
+use \Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_help().
@@ -39,60 +37,31 @@ function register_display_permission() {
 }
 
 /**
- * Implements hook_theme().
- */
-function register_display_theme() {
-  return [
-    'register_display' => [
-      'render element' => 'children',
-    ],
-  ];
-}
-
-/**
- * Implements hook_entity_operation_alter().
- */
-function register_display_entity_operation_alter(array &$operations, \Drupal\Core\Entity\EntityInterface $entity) {
-  if ($entity->getEntityTypeId() == 'user_role') {
-    if (\Drupal::service('router.route_provider')->getRouteByName(
-      'register_display.create_registration_page_form'
-    )) {
-      $availableUserRolesToRegister = \Drupal::service('register_display.services')->getAvailableUserRolesToRegister();
-      if (!in_array($entity->id(), array_keys($availableUserRolesToRegister))) {
-        return;
-      }
-      $operations['register_display_page'] = [
-        'title' => t('Add Registration page'),
-        'url' => Url::fromRoute(
-          'register_display.create_registration_page_form',
-          ['roleId' => $entity->id()]
-        ),
-        'weight' => 50,
-      ];
-    }
-  }
-}
-
-
-/**
  * Implements hook_entity_type_alter().
  */
-function register_display_entity_type_alter(array &$entity_types){
-  // We get all form modes, for all entities, and loop through them.
+function register_display_entity_type_alter(array &$entity_types) {
+  // Get all form display modes.
   $form_modes = \Drupal::service('entity_display.repository')->getAllFormModes();
   foreach ($form_modes as $entity_type => $display_modes) {
     if ($entity_type !== 'user') {
-      // We are only interested in adding a handler to the Node entity.
       continue;
     }
 
     $user_type = $entity_types[$entity_type];
     foreach ($display_modes as $machine_name => $form_display) {
-      // We get the default handler class. It will be enough for us.
       $default_handler_class = $user_type->getHandlerClasses()['form']['default'];
-      // We set the form class, keyed by the machine name of our custom form mode.
       $user_type->setFormClass($machine_name, $default_handler_class);
     }
   }
 }
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function register_display_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Check if roleId is set.
+  if ($roleId = $form_state->getValue('roleId')) {
+    $form['roleId'] = array('#type' => 'value', '#value' => $roleId);
+    $form['#validate'][] = '\Drupal\register_display\RegisterDisplayServices::addRoleToUser';
+  }
+}
