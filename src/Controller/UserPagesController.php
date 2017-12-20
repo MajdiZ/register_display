@@ -11,7 +11,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\register_display\RegisterDisplayServices;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -21,7 +20,6 @@ class UserPagesController extends ControllerBase {
   protected $services;
   protected $entityTypeManager;
   protected $formBuilder;
-
 
   /**
    * {@inheritdoc}
