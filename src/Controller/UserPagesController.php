@@ -30,7 +30,6 @@ class UserPagesController extends ControllerBase {
     $this->services = $services;
     $this->entityTypeManager = $entityTypeManager;
     $this->formBuilder = $formBuilder;
-
   }
 
   /**
@@ -42,6 +41,7 @@ class UserPagesController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('form_builder')
     );
+
   }
 
   /**
@@ -54,11 +54,15 @@ class UserPagesController extends ControllerBase {
    *    Array form.
    */
   public function registerPage(string $roleId) {
-
     $registerPageConfig = $this->services->getRegistrationPages($roleId);
 
-    $entity = User::create();
+    // Be sure definition is up to date.
+    $userEntityDefinition = $this->entityTypeManager->getDefinition('user');
+    if (!array_key_exists($registerPageConfig['displayId'], $userEntityDefinition->getHandlerClasses()['form'])) {
+      $this->entityTypeManager->clearCachedDefinitions();
+    }
 
+    $entity = User::create();
     $form_object = $this->entityTypeManager->getFormObject($entity->getEntityTypeId(), $registerPageConfig['displayId']);
     $form_object->setEntity($entity);
 
