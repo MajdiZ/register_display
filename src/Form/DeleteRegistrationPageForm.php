@@ -104,7 +104,7 @@ class DeleteRegistrationPageForm extends ConfigFormBase {
       case 'approved':
         $roleId = $form_state->getValue('roleId');
         // Delete any Alias for register page.
-        $registerPageSource = $this->services::REGISTER_DISPLAY_BASE_REGISTER_PATH . '/' . $roleId;
+        $registerPageSource = $this->services->getRegisterDisplayBasePath() . '/' . $roleId;
         $this->services->deleteAliasBySource($registerPageSource);
         // Delete configuration.
         $this->configFactory->getEditable('register_display.settings.pages')
