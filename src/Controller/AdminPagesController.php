@@ -40,6 +40,7 @@ class AdminPagesController extends ControllerBase {
       t('Role'),
       t('Display'),
       t('Path'),
+      t('Title'),
       t('Operations'),
     ];
 
@@ -95,6 +96,7 @@ class AdminPagesController extends ControllerBase {
             '@path' => $pages[$roleId]['registerPageUrl'],
             '@alias' => $pages[$roleId]['registerPageAlias'],
           ]),
+          $pages[$roleId]['registerPageTitle'],
           $operationsRendered,
         ];
 
@@ -116,6 +118,7 @@ class AdminPagesController extends ControllerBase {
         // Prepare row.
         $output['#rows'][] = [
           $roleDisplayName,
+          '--',
           '--',
           '--',
           $operationsRendered,

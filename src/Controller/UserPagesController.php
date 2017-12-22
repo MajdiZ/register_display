@@ -73,9 +73,18 @@ class UserPagesController extends ControllerBase {
     return $this->formBuilder->buildForm($form_object, $form_state);
   }
 
-  public function registerPageTitle(string $roleId){
-    return $roleId;
+  /**
+   * Register page title callback.
+   *
+   * @param string $roleId
+   *    Role ID.
+   *
+   * @return string
+   *   Page title.
+   */
+  public function registerPageTitle(string $roleId) {
+    $registerPageConfig = $this->services->getRegistrationPages($roleId);
+    return $registerPageConfig['registerPageTitle'];
   }
-
 
 }

@@ -119,6 +119,14 @@ class CreateRegistrationPageForm extends ConfigFormBase {
       '#required' => TRUE,
     );
 
+    $form['registerPageTitle'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Page title'),
+      '#default_value' => $config['registerPageTitle'],
+      '#description' => $this->t('Title for register page.'),
+      '#required' => TRUE,
+    );
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -165,6 +173,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
       'displayName' => $userFormDisplaysOptions[$form_state->getValue('displayId')],
       'registerPageUrl' => $form_state->getValue('registerPageUrl'),
       'registerPageAlias' => $form_state->getValue('registerPageAlias'),
+      'registerPageTitle' => $form_state->getValue('registerPageTitle'),
     ];
 
     $this->configFactory->getEditable('register_display.settings.pages')
