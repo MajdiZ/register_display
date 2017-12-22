@@ -161,4 +161,22 @@ class RegisterDisplayServices {
     $form_state->setValue(array('roles', $roleId), $roleId);
   }
 
+  /**
+   * Delete register display page.
+   *
+   * @param string $roleId
+   *    Role Id.
+   */
+  public function deleteRegisterDisplayPage($roleId) {
+    if (self::getRegistrationPages($roleId)) {
+      // Delete any Alias for register page.
+      $registerPageSource = self::getRegisterDisplayBasePath() . '/' . $roleId;
+      self::deleteAliasBySource($registerPageSource);
+      // Delete configuration.
+      $this->configFactory->getEditable('register_display.settings.pages')
+        ->clear($roleId)
+        ->save();
+    }
+  }
+
 }

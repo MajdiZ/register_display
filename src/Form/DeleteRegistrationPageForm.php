@@ -103,13 +103,7 @@ class DeleteRegistrationPageForm extends ConfigFormBase {
     switch ($action) {
       case 'approved':
         $roleId = $form_state->getValue('roleId');
-        // Delete any Alias for register page.
-        $registerPageSource = $this->services->getRegisterDisplayBasePath() . '/' . $roleId;
-        $this->services->deleteAliasBySource($registerPageSource);
-        // Delete configuration.
-        $this->configFactory->getEditable('register_display.settings.pages')
-          ->clear($form_state->getValue('roleId'))
-          ->save();
+        $this->services->deleteRegisterDisplayPage($roleId);
         break;
     }
     $form_state->setRedirect('register_display.admin_index');

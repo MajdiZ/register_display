@@ -7,6 +7,7 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use \Drupal\Core\Form\FormStateInterface;
+use Drupal\user\Entity\Role;
 
 /**
  * Implements hook_help().
@@ -64,4 +65,12 @@ function register_display_form_user_register_form_alter(&$form, FormStateInterfa
     $form['roleId'] = array('#type' => 'value', '#value' => $roleId);
     $form['#validate'][] = '\Drupal\register_display\RegisterDisplayServices::addRoleToUser';
   }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function register_display_user_role_delete(Role $entity) {
+  $registerDisplayService = \Drupal::service('register_display.services');
+  $registerDisplayService->deleteRegisterDisplayPage($entity->get('id'));
 }
