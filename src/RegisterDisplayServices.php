@@ -40,6 +40,16 @@ class RegisterDisplayServices {
   }
 
   /**
+   * Get register display base path.
+   *
+   * @return string
+   *    Base path.
+   */
+  public function getRegisterDisplayBasePath() {
+    return self::REGISTER_DISPLAY_BASE_REGISTER_PATH;
+  }
+
+  /**
    * Function to get available roles to register.
    *
    * @return array|bool

@@ -81,7 +81,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
     // @TODO add check if roleID is null or not valid.
     $config = $this->config('register_display.settings.pages')->get($roleId);
 
-    $registerPageUrl = $this->services::REGISTER_DISPLAY_BASE_REGISTER_PATH . '/' . $roleId;
+    $registerPageUrl = $this->services->getRegisterDisplayBasePath() . '/' . $roleId;
 
     $form['op'] = [
       '#type' => 'value',
