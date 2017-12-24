@@ -59,7 +59,7 @@ function register_display_entity_type_alter(array &$entity_types) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function register_display_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function register_display_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Check if roleId is set.
   if ($roleId = $form_state->getValue('roleId')) {
     $form['roleId'] = array('#type' => 'value', '#value' => $roleId);
