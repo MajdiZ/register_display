@@ -6,6 +6,14 @@ register_display.admin_index:
   requirements:
     _permission: 'administer register_display'
 
+register_display.admin_settings:
+  path: 'admin/config/people/register-display/settings'
+  defaults:
+    _controller: '\Drupal\register_display\Controller\AdminPagesController::settingsAdmin'
+    _title: 'Settings'
+  requirements:
+    _permission: 'administer register_display'
+
 register_display.create_registration_page_form:
   path: 'admin/config/people/register-display/add/{roleId}'
   defaults:

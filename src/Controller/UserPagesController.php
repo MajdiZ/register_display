@@ -1,20 +1,21 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\register_display\Controller\UserPagesController.
- */
-
 namespace Drupal\Register_display\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\EventSubscriber\RedirectResponseSubscriber;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\register_display\RegisterDisplayServices;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class UserPagesController.
+ *
+ * @package Drupal\Register_display\Controller
+ */
 class UserPagesController extends ControllerBase {
 
   protected $services;
@@ -85,6 +86,17 @@ class UserPagesController extends ControllerBase {
   public function registerPageTitle(string $roleId) {
     $registerPageConfig = $this->services->getRegistrationPages($roleId);
     return $registerPageConfig['registerPageTitle'];
+  }
+
+  /**
+   * Redirect to target registration page.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *    Redirect response.
+   */
+  public function redirectControl() {
+    $roleId = $this->services->getRedirectTarget();
+    return $this->redirect('register_display.user_register_page', ['roleId' => $roleId]);
   }
 
 }

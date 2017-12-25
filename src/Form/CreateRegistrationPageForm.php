@@ -3,7 +3,6 @@
 namespace Drupal\register_display\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\PathElement;
@@ -19,20 +18,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class CreateRegistrationPageForm extends ConfigFormBase {
 
   protected $services;
-  protected $entityDisplayRepository;
   protected $requestContext;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(RegisterDisplayServices $services,
-    EntityDisplayRepositoryInterface $entityDisplayRepository,
     ConfigFactoryInterface $config_factory,
     RequestContext $request_context) {
 
     parent::__construct($config_factory);
     $this->services = $services;
-    $this->entityDisplayRepository = $entityDisplayRepository;
     $this->requestContext = $request_context;
   }
 
@@ -42,7 +38,6 @@ class CreateRegistrationPageForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('register_display.services'),
-      $container->get('entity_display.repository'),
       $container->get('config.factory'),
       $container->get('router.request_context')
     );
@@ -60,7 +55,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'register_display.settings',
+      'register_display.settings.pages',
     ];
   }
 
@@ -94,7 +89,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
     ];
 
     // Load display modes.
-    $userFormDisplaysOptions = $this->entityDisplayRepository->getFormModeOptions('user');
+    $userFormDisplaysOptions = $this->services->getUserFormModeOptions();
 
     $form['displayId'] = [
       '#type' => 'select',
@@ -164,7 +159,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
 
     // Load display modes.
-    $userFormDisplaysOptions = $this->entityDisplayRepository->getFormModeOptions('user');
+    $userFormDisplaysOptions = $this->services->getUserFormModeOptions();
     $userRoleName = user_role_names();
     $formValues = [
       'roleId' => $form_state->getValue('roleId'),

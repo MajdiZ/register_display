@@ -48,7 +48,7 @@ class DeleteRegistrationPageForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'register_display.settings',
+      'register_display.settings.pages',
     ];
   }
 

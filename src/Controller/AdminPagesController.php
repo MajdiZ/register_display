@@ -3,6 +3,7 @@
 namespace Drupal\register_display\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\register_display\RegisterDisplayServices;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
@@ -14,12 +15,14 @@ use Drupal\Core\Url;
  */
 class AdminPagesController extends ControllerBase {
   protected $services;
+  protected $formBuilder;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(RegisterDisplayServices $services) {
+  public function __construct(RegisterDisplayServices $services, FormBuilderInterface $formBuilder) {
     $this->services = $services;
+    $this->formBuilder = $formBuilder;
   }
 
   /**
@@ -27,12 +30,13 @@ class AdminPagesController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('register_display.services')
+      $container->get('register_display.services'),
+      $container->get('form_builder')
     );
   }
 
   /**
-   * Register display.
+   * Register display main admin page.
    */
   public function indexAdmin() {
     // Prepare table.
@@ -128,6 +132,14 @@ class AdminPagesController extends ControllerBase {
     }
 
     return $output;
+  }
+
+  /**
+   * Register display settings page.
+   */
+  public function settingsAdmin() {
+    $settingsForm = $this->formBuilder->getForm('Drupal\register_display\Form\SettingsForm');
+    return $settingsForm;
   }
 
 }

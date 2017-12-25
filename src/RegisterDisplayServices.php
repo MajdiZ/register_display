@@ -3,6 +3,7 @@
 namespace Drupal\register_display;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
@@ -23,6 +24,7 @@ class RegisterDisplayServices {
   protected $aliasStorage;
   protected $languageManager;
   protected $configFactory;
+  protected $entityDisplayRepository;
 
   /**
    * {@inheritdoc}
@@ -31,12 +33,14 @@ class RegisterDisplayServices {
     EntityTypeManagerInterface $entityTypeManager,
     AliasStorageInterface $aliasStorage,
     LanguageManagerInterface $languageManager,
-    ConfigFactoryInterface $configFactory) {
+    ConfigFactoryInterface $configFactory,
+    EntityDisplayRepositoryInterface $entityDisplayRepository) {
 
     $this->entityTypeManager = $entityTypeManager;
     $this->aliasStorage = $aliasStorage;
     $this->languageManager = $languageManager;
     $this->configFactory = $configFactory;
+    $this->entityDisplayRepository = $entityDisplayRepository;
   }
 
   /**
@@ -104,6 +108,24 @@ class RegisterDisplayServices {
       $rolesConfig[$roleId] = $config;
     }
     return $rolesConfig;
+  }
+
+  /**
+   * Build array of available pages as options.
+   *
+   * @return array|mixed
+   *    False if no page available, or array of key => option.
+   */
+  public function getRegistrationPagesOptions() {
+    $registrationPages = self::getRegistrationPages();
+    if (!$registrationPages) {
+      return $registrationPages;
+    }
+    $registrationPagesOptions = [];
+    foreach ($registrationPages as $roleId => $config) {
+      $registrationPagesOptions[$roleId] = $config['roleName'] . ' => ' . $config['registerPageAlias'];
+    }
+    return $registrationPagesOptions;
   }
 
   /**
@@ -177,6 +199,36 @@ class RegisterDisplayServices {
         ->clear($roleId)
         ->save();
     }
+  }
+
+  /**
+   * Get user form mode displays as option.
+   *
+   * @return array
+   *   Key => Value of user form mode.
+   */
+  public function getUserFormModeOptions() {
+    return $this->entityDisplayRepository->getFormModeOptions('user');
+  }
+
+  /**
+   * Wrapper function for isRedirect config.
+   *
+   * @return bool|null
+   *    Value of isRedirect.
+   */
+  public function isRedirectDefaultRegisterPage() {
+    return $this->configFactory->getEditable('register_display.settings.config')->get('isRedirect');
+  }
+
+  /**
+   * Wrapper function for redirectTarget config.
+   *
+   * @return string
+   *    Role id.
+   */
+  public function getRedirectTarget() {
+    return $this->configFactory->getEditable('register_display.settings.config')->get('redirectTarget');
   }
 
 }
