@@ -70,8 +70,14 @@ class UserPagesController extends ControllerBase {
     $form_state = (new FormState())->setFormState([]);
     // Add role id value for form state.
     $form_state->setValue('roleId', $roleId);
-
-    return $this->formBuilder->buildForm($form_object, $form_state);
+    $registerForm = $this->formBuilder->buildForm($form_object, $form_state);
+    // Set register button text.
+    if (!empty($registerPageConfig['registerPageButtonText'])) {
+      $registerForm['actions']['submit']['#value'] = $this->t('@registerPageButtonText', [
+        '@registerPageButtonText' => $registerPageConfig['registerPageButtonText'],
+      ]);
+    }
+    return $registerForm;
   }
 
   /**
