@@ -122,6 +122,13 @@ class CreateRegistrationPageForm extends ConfigFormBase {
       '#required' => TRUE,
     );
 
+    $form['registerPageButtonText'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Submit button text'),
+      '#default_value' => $config['registerPageButtonText'],
+      '#required' => FALSE,
+    );
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -169,6 +176,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
       'registerPageUrl' => $form_state->getValue('registerPageUrl'),
       'registerPageAlias' => $form_state->getValue('registerPageAlias'),
       'registerPageTitle' => $form_state->getValue('registerPageTitle'),
+      'registerPageButtonText' => $form_state->getValue('registerPageButtonText'),
     ];
     // Get register pages from config.
     $registerPages = $this->services->getRegistrationPages();
