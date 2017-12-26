@@ -46,7 +46,7 @@ class SettingsForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'register_display.settings.config',
+      'register_display.settings',
     ];
   }
 
@@ -54,7 +54,7 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('register_display.settings.config');
+    $config = $this->config('register_display.settings');
     $disabledSettings = FALSE;
     // Get registration pages.
     $registrationPages = $this->services->getRegistrationPagesOptions();
@@ -98,7 +98,7 @@ class SettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-    $this->configFactory->getEditable('register_display.settings.config')
+    $this->configFactory->getEditable('register_display.settings')
       ->set('isRedirect', $form_state->getValue('isRedirect'))
       ->set('redirectTarget', $form_state->getValue('redirectTarget'))
       ->save();

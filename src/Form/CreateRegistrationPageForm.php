@@ -55,7 +55,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'register_display.settings.pages',
+      'register_display.settings',
     ];
   }
 
@@ -74,8 +74,8 @@ class CreateRegistrationPageForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, $roleId = NULL) {
     // @TODO add check if roleID is null or not valid.
-    $config = $this->config('register_display.settings.pages')->get($roleId);
-
+    $configPages = $this->config('register_display.settings')->get('pages');
+    $config = $configPages[$roleId];
     $registerPageUrl = $this->services->getRegisterDisplayBasePath() . '/' . $roleId;
 
     $form['op'] = [
@@ -170,9 +170,11 @@ class CreateRegistrationPageForm extends ConfigFormBase {
       'registerPageAlias' => $form_state->getValue('registerPageAlias'),
       'registerPageTitle' => $form_state->getValue('registerPageTitle'),
     ];
-
-    $this->configFactory->getEditable('register_display.settings.pages')
-      ->set($formValues['roleId'], $formValues)
+    // Get register pages from config.
+    $registerPages = $this->services->getRegistrationPages();
+    $registerPages[$formValues['roleId']] = $formValues;
+    $this->configFactory->getEditable('register_display.settings')
+      ->set('pages', $registerPages)
       ->save();
     $this->services->updateAlias($formValues['registerPageUrl'], $formValues['registerPageAlias']);
     $form_state->setRedirect('register_display.admin_index');

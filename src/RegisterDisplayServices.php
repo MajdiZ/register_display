@@ -91,23 +91,18 @@ class RegisterDisplayServices {
    */
   public function getRegistrationPages($roleMachineName = NULL) {
     $availableRoles = $this->getAvailableUserRolesToRegister();
+    // If no available roles at all we return false.
     if (!$availableRoles) {
       return FALSE;
     }
-
-    $rolesConfig = FALSE;
-    $pagesConfig = \Drupal::config('register_display.settings.pages');
-
+    // Loading pages config.
+    $pagesConfig = $this->configFactory->get('register_display.settings')->get('pages');
+    // If config requested for one only role we return it.
     if (!empty($availableRoles[$roleMachineName])) {
-      return $pagesConfig->get($roleMachineName);
+      return $pagesConfig[$roleMachineName];
     }
 
-    $pagesConfig = \Drupal::config('register_display.settings.pages');
-
-    foreach ($pagesConfig->get() as $roleId => $config) {
-      $rolesConfig[$roleId] = $config;
-    }
-    return $rolesConfig;
+    return $pagesConfig;
   }
 
   /**
@@ -190,13 +185,15 @@ class RegisterDisplayServices {
    *    Role Id.
    */
   public function deleteRegisterDisplayPage($roleId) {
-    if (self::getRegistrationPages($roleId)) {
+    $registerPages = self::getRegistrationPages();
+    if (array_key_exists($roleId, $registerPages)) {
       // Delete any Alias for register page.
       $registerPageSource = self::getRegisterDisplayBasePath() . '/' . $roleId;
       self::deleteAliasBySource($registerPageSource);
       // Delete configuration.
-      $this->configFactory->getEditable('register_display.settings.pages')
-        ->clear($roleId)
+      unset($registerPages[$roleId]);
+      $this->configFactory->getEditable('register_display.settings')
+        ->set('pages', $registerPages)
         ->save();
     }
   }
@@ -218,7 +215,7 @@ class RegisterDisplayServices {
    *    Value of isRedirect.
    */
   public function isRedirectDefaultRegisterPage() {
-    return $this->configFactory->getEditable('register_display.settings.config')->get('isRedirect');
+    return $this->configFactory->getEditable('register_display.settings')->get('isRedirect');
   }
 
   /**
@@ -228,7 +225,7 @@ class RegisterDisplayServices {
    *    Role id.
    */
   public function getRedirectTarget() {
-    return $this->configFactory->getEditable('register_display.settings.config')->get('redirectTarget');
+    return $this->configFactory->getEditable('register_display.settings')->get('redirectTarget');
   }
 
 }
