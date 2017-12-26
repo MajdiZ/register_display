@@ -102,6 +102,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('isRedirect', $form_state->getValue('isRedirect'))
       ->set('redirectTarget', $form_state->getValue('redirectTarget'))
       ->save();
+    $this->services->clearRouteCache();
   }
 
 }

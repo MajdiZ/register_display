@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Path\AliasStorageInterface;
+use Drupal\Core\Routing\RouteBuilderInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -25,6 +26,7 @@ class RegisterDisplayServices {
   protected $languageManager;
   protected $configFactory;
   protected $entityDisplayRepository;
+  protected $routeBuilder;
 
   /**
    * {@inheritdoc}
@@ -34,13 +36,15 @@ class RegisterDisplayServices {
     AliasStorageInterface $aliasStorage,
     LanguageManagerInterface $languageManager,
     ConfigFactoryInterface $configFactory,
-    EntityDisplayRepositoryInterface $entityDisplayRepository) {
+    EntityDisplayRepositoryInterface $entityDisplayRepository,
+    RouteBuilderInterface $routeBuilder) {
 
     $this->entityTypeManager = $entityTypeManager;
     $this->aliasStorage = $aliasStorage;
     $this->languageManager = $languageManager;
     $this->configFactory = $configFactory;
     $this->entityDisplayRepository = $entityDisplayRepository;
+    $this->routeBuilder = $routeBuilder;
   }
 
   /**
@@ -192,9 +196,15 @@ class RegisterDisplayServices {
       self::deleteAliasBySource($registerPageSource);
       // Delete configuration.
       unset($registerPages[$roleId]);
-      $this->configFactory->getEditable('register_display.settings')
-        ->set('pages', $registerPages)
-        ->save();
+      $updateConfig = $this->configFactory->getEditable('register_display.settings')
+        ->set('pages', $registerPages);
+      // We need to check if this  was used to redirect original register page.
+      $redirectTarget = self::getRedirectTarget();
+      if ($redirectTarget == $roleId) {
+        $updateConfig->clear('isRedirect')->clear('redirectTarget');
+      }
+      $updateConfig->save();
+      self::clearRouteCache();
     }
   }
 
@@ -226,6 +236,13 @@ class RegisterDisplayServices {
    */
   public function getRedirectTarget() {
     return $this->configFactory->getEditable('register_display.settings')->get('redirectTarget');
+  }
+
+  /**
+   * Clear route cache.
+   */
+  public function clearRouteCache() {
+    $this->routeBuilder->rebuild();
   }
 
 }
