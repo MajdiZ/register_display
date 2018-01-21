@@ -75,7 +75,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $roleId = NULL) {
     // @TODO add check if roleID is null or not valid.
     $configPages = $this->config('register_display.settings')->get('pages');
-    $config = $configPages[$roleId];
+    $config = empty($configPages[$roleId]) ? NULL : $configPages[$roleId];
     $registerPageUrl = $this->services->getRegisterDisplayBasePath() . '/' . $roleId;
 
     $form['op'] = [
