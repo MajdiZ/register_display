@@ -4,7 +4,6 @@ namespace Drupal\Register_display\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\EventSubscriber\RedirectResponseSubscriber;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\register_display\RegisterDisplayServices;
