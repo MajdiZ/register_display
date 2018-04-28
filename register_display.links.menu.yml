@@ -3,4 +3,3 @@ register_display.admin:
   description: 'Different register form based on displays for each role.'
   parent: user.admin_index
   route_name: register_display.admin_index
-  
