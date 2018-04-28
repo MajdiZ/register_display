@@ -41,11 +41,11 @@ class AdminPagesController extends ControllerBase {
   public function indexAdmin() {
     // Prepare table.
     $header = [
-      t('Role'),
-      t('Display'),
-      t('Path'),
-      t('Title'),
-      t('Operations'),
+      $this->t('Role'),
+      $this->t('Display'),
+      $this->t('Path'),
+      $this->t('Title'),
+      $this->t('Operations'),
     ];
 
     $output = [
