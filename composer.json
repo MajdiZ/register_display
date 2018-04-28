@@ -1,7 +1,7 @@
 {
   "name": "drupal/register_display",
   "type": "drupal-module",
-  "description": "Defferent rgister form based on displays",
+  "description": "Different register form based on displays",
   "keywords": ["Drupal"],
   "license": "GPL-2.0+",
   "homepage": "https://www.drupal.org/project/register_display",
