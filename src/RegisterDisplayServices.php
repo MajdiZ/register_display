@@ -174,12 +174,12 @@ class RegisterDisplayServices {
    *
    * @param array $form
    *   Register form.
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   Form state.
    */
   public function addRoleToUser(array &$form, FormStateInterface $form_state) {
     $roleId = $form_state->getValue('roleId');
-    $form_state->setValue(array('roles', $roleId), $roleId);
+    $form_state->setValue(['roles', $roleId], $roleId);
   }
 
   /**
