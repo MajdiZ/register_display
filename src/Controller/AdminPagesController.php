@@ -4,6 +4,7 @@ namespace Drupal\register_display\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Render\Renderer;
 use Drupal\register_display\RegisterDisplayServices;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
@@ -16,11 +17,12 @@ use Drupal\Core\Url;
 class AdminPagesController extends ControllerBase {
   protected $services;
   protected $formBuilder;
+  protected $renderer;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(RegisterDisplayServices $services, FormBuilderInterface $formBuilder) {
+  public function __construct(RegisterDisplayServices $services, FormBuilderInterface $formBuilder, Renderer $renderer) {
     $this->services = $services;
     $this->formBuilder = $formBuilder;
   }
@@ -31,7 +33,8 @@ class AdminPagesController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('register_display.services'),
-      $container->get('form_builder')
+      $container->get('form_builder'),
+      $container->get('renderer')
     );
   }
 
@@ -91,7 +94,7 @@ class AdminPagesController extends ControllerBase {
           ],
         ];
 
-        $operationsRendered = \Drupal::service('renderer')->render($operations);
+        $operationsRendered = $this->renderer->render($operations);
         // Prepare row.
         $output['#rows'][] = [
           $roleDisplayName,
@@ -117,7 +120,7 @@ class AdminPagesController extends ControllerBase {
           ],
         ];
 
-        $operationsRendered = \Drupal::service('renderer')->render($operations);
+        $operationsRendered = $this->renderer->render($operations);
 
         // Prepare row.
         $output['#rows'][] = [
