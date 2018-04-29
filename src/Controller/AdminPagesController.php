@@ -48,7 +48,7 @@ class AdminPagesController extends ControllerBase {
       $this->t('Operations'),
     ];
 
-    $output = [
+    $build = [
       '#theme' => 'table',
       '#header' => $header,
       '#empty' => $this->t(
@@ -67,18 +67,17 @@ class AdminPagesController extends ControllerBase {
     // Get valid available user roles.
     $availableUserRoles = $this->services->getAvailableUserRolesToRegister();
     if (empty($availableUserRoles)) {
-      return $output;
+      return $build;
     }
 
     // Get registration pages.
     $pages = $this->services->getRegistrationPages();
 
-    $output['#rows'] = [];
     foreach ($availableUserRoles as $roleId => $roleDisplayName) {
       if ($pages && array_key_exists($roleId, $pages)) {
         // Prepare operations.
         $operations = [
-          '#type' => 'dropbutton',
+          '#type' => 'operations',
           '#links' => [
             'edit' => [
               'title' => $this->t('Edit register page'),
@@ -91,24 +90,25 @@ class AdminPagesController extends ControllerBase {
           ],
         ];
 
-        $operationsRendered = \Drupal::service('renderer')->render($operations);
         // Prepare row.
-        $output['#rows'][] = [
-          $roleDisplayName,
-          $pages[$roleId]['displayName'],
-          $this->t('<strong>Path:</strong> @path <br/> <strong>Alias</strong>: @alias', [
-            '@path' => $pages[$roleId]['registerPageUrl'],
-            '@alias' => $pages[$roleId]['registerPageAlias'],
-          ]),
-          $pages[$roleId]['registerPageTitle'],
-          $operationsRendered,
+        $build['#rows'][] = [
+          'data' => [
+            $roleDisplayName,
+            $pages[$roleId]['displayName'],
+            $this->t('<strong>Path:</strong> @path <br/> <strong>Alias</strong>: @alias', [
+              '@path' => $pages[$roleId]['registerPageUrl'],
+              '@alias' => $pages[$roleId]['registerPageAlias'],
+            ]),
+            $pages[$roleId]['registerPageTitle'],
+            ['data' => $operations],
+          ],
         ];
 
       }
       else {
         // Prepare operations.
         $operations = [
-          '#type' => 'dropbutton',
+          '#type' => 'operations',
           '#links' => [
             'create' => [
               'title' => $this->t('Create register page'),
@@ -117,21 +117,21 @@ class AdminPagesController extends ControllerBase {
           ],
         ];
 
-        $operationsRendered = \Drupal::service('renderer')->render($operations);
-
         // Prepare row.
-        $output['#rows'][] = [
-          $roleDisplayName,
-          '--',
-          '--',
-          '--',
-          $operationsRendered,
+        $build['#rows'][] = [
+          'data' => [
+            $roleDisplayName,
+            '--',
+            '--',
+            '--',
+            ['data' => $operations],
+          ],
         ];
       }
 
     }
 
-    return $output;
+    return $build;
   }
 
   /**
