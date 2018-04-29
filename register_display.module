@@ -62,7 +62,7 @@ function register_display_entity_type_alter(array &$entity_types) {
 function register_display_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Check if roleId is set.
   if ($roleId = $form_state->getValue('roleId')) {
-    $form['roleId'] = array('#type' => 'value', '#value' => $roleId);
+    $form['roleId'] = ['#type' => 'value', '#value' => $roleId];
     $form['#validate'][] = '\Drupal\register_display\RegisterDisplayServices::addRoleToUser';
   }
 }

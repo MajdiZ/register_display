@@ -63,14 +63,14 @@ class SettingsForm extends ConfigFormBase {
       $disabledSettings = TRUE;
     }
 
-    $form['redirectSettings'] = array(
+    $form['redirectSettings'] = [
       '#type' => 'details',
       '#title' => $this->t('Redirect settings'),
       '#description' => $disabledSettings ?
       $this->t('This option available only if you already have at least one register page.') :
       $this->t('Redirect user/register to one of custom registration pages.'),
       '#open' => TRUE,
-    );
+    ];
 
     $form['redirectSettings']['isRedirect'] = [
       '#type' => 'checkbox',

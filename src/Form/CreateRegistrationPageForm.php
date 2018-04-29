@@ -104,7 +104,7 @@ class CreateRegistrationPageForm extends ConfigFormBase {
       '#value' => $registerPageUrl,
     ];
 
-    $form['registerPageAlias'] = array(
+    $form['registerPageAlias'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Registration page alias'),
       '#convert_path' => PathElement::CONVERT_NONE,
@@ -112,22 +112,22 @@ class CreateRegistrationPageForm extends ConfigFormBase {
       '#description' => $this->t('Register page url for this role is @url', ['@url' => $registerPageUrl]),
       '#field_prefix' => $this->requestContext->getCompleteBaseUrl(),
       '#required' => TRUE,
-    );
+    ];
 
-    $form['registerPageTitle'] = array(
+    $form['registerPageTitle'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Page title'),
       '#default_value' => $config['registerPageTitle'],
       '#description' => $this->t('Title for register page.'),
       '#required' => TRUE,
-    );
+    ];
 
-    $form['registerPageButtonText'] = array(
+    $form['registerPageButtonText'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Submit button text'),
       '#default_value' => $config['registerPageButtonText'],
       '#required' => FALSE,
-    );
+    ];
 
     return parent::buildForm($form, $form_state);
   }

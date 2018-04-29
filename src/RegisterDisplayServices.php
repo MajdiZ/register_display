@@ -51,7 +51,7 @@ class RegisterDisplayServices {
    * Get register display base path.
    *
    * @return string
-   *    Base path.
+   *   Base path.
    */
   public function getRegisterDisplayBasePath() {
     return self::REGISTER_DISPLAY_BASE_REGISTER_PATH;
@@ -61,7 +61,7 @@ class RegisterDisplayServices {
    * Function to get available roles to register.
    *
    * @return array|bool
-   *    List of available roles to register or FALSE if no roles available.
+   *   List of available roles to register or FALSE if no roles available.
    */
   public function getAvailableUserRolesToRegister() {
     // We exclude Anonymous role by passing TRUE for user_role_names function.
@@ -113,7 +113,7 @@ class RegisterDisplayServices {
    * Build array of available pages as options.
    *
    * @return array|mixed
-   *    False if no page available, or array of key => option.
+   *   False if no page available, or array of key => option.
    */
   public function getRegistrationPagesOptions() {
     $registrationPages = self::getRegistrationPages();
@@ -134,7 +134,7 @@ class RegisterDisplayServices {
    *   Alias to check.
    *
    * @return bool
-   *    True if alias exist, otherwise FALSE.
+   *   True if alias exist, otherwise FALSE.
    */
   public function isAliasExist($alias) {
     return $this->aliasStorage->aliasExists($alias, LanguageInterface::LANGCODE_NOT_SPECIFIED);
@@ -144,9 +144,9 @@ class RegisterDisplayServices {
    * Update alias.
    *
    * @param string $source
-   *    Source path.
+   *   Source path.
    * @param string $alias
-   *    Alias path.
+   *   Alias path.
    */
   public function updateAlias($source, $alias) {
     // First we check if source has alias.
@@ -163,7 +163,7 @@ class RegisterDisplayServices {
    * Delete alias by source.
    *
    * @param string $source
-   *    Source path.
+   *   Source path.
    */
   public function deleteAliasBySource($source) {
     $this->aliasStorage->delete(['source' => $source]);
@@ -173,9 +173,9 @@ class RegisterDisplayServices {
    * Inject user role in the creation process.
    *
    * @param array $form
-   *    Register form.
+   *   Register form.
    * @param FormStateInterface $form_state
-   *    Form state.
+   *   Form state.
    */
   public function addRoleToUser(array &$form, FormStateInterface $form_state) {
     $roleId = $form_state->getValue('roleId');
@@ -186,7 +186,7 @@ class RegisterDisplayServices {
    * Delete register display page.
    *
    * @param string $roleId
-   *    Role Id.
+   *   Role Id.
    */
   public function deleteRegisterDisplayPage($roleId) {
     $registerPages = self::getRegistrationPages();
@@ -222,7 +222,7 @@ class RegisterDisplayServices {
    * Wrapper function for isRedirect config.
    *
    * @return bool|null
-   *    Value of isRedirect.
+   *   Value of isRedirect.
    */
   public function isRedirectDefaultRegisterPage() {
     return $this->configFactory->getEditable('register_display.settings')->get('isRedirect');
@@ -232,7 +232,7 @@ class RegisterDisplayServices {
    * Wrapper function for redirectTarget config.
    *
    * @return string
-   *    Role id.
+   *   Role id.
    */
   public function getRedirectTarget() {
     return $this->configFactory->getEditable('register_display.settings')->get('redirectTarget');

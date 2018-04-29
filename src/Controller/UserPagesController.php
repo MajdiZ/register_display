@@ -48,10 +48,10 @@ class UserPagesController extends ControllerBase {
    * Register page.
    *
    * @param string $roleId
-   *    Role ID.
+   *   Role Id.
    *
    * @return array
-   *    Array form.
+   *   Array form.
    */
   public function registerPage(string $roleId) {
     $registerPageConfig = $this->services->getRegistrationPages($roleId);
@@ -83,7 +83,7 @@ class UserPagesController extends ControllerBase {
    * Register page title callback.
    *
    * @param string $roleId
-   *    Role ID.
+   *   Role ID.
    *
    * @return string
    *   Page title.
@@ -97,7 +97,7 @@ class UserPagesController extends ControllerBase {
    * Redirect to target registration page.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   *    Redirect response.
+   *   Redirect response.
    */
   public function redirectControl() {
     $roleId = $this->services->getRedirectTarget();
